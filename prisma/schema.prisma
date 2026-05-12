@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Subscriber {
+  id        Int      @id @default(autoincrement())
+  platform  String
+  chatId    String
+  userId    String?
+  firstName String?
+  lastName  String?
+  username  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([platform, chatId])
+}
+
+model ScheduleDay {
+  id        Int      @id @default(autoincrement())
+  date      String   @unique
+  text      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DayMenu {
+  id        Int      @id @default(autoincrement())
+  date      String   @unique
+  breakfast String
+  lunch     String
+  dinner    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SocialLink {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AlbumLink {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique
+  url       String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TimerEvent {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique
+  eventAt   DateTime
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Counselor {
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  description String
+  aliases     String?
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  sessions    QuizSession[]
+}
+
+model QuizSession {
+  id          Int       @id @default(autoincrement())
+  platform    String
+  chatId      String
+  userId      String?
+  counselorId Int
+  attempts    Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  counselor Counselor @relation(fields: [counselorId], references: [id], onDelete: Cascade)
+
+  @@unique([platform, chatId])
+}
